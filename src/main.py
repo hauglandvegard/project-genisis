@@ -1,6 +1,8 @@
 import argparse
 import logging
 import logging.config
+import os
+import subprocess
 
 from src.config import DEFAULT_DEST, LOGS_DIR
 from src.core import cli, github, scaffold
@@ -66,6 +68,12 @@ def main() -> None:
     print(f"\nDone! {config.project_name} → {project_dir}")
     if not args.no_push:
         print(f"      https://github.com/{user.login}/{config.project_name}")
+
+    editor = os.environ.get("EDITOR")
+    if editor:
+        cmd = [editor, str(project_dir)]
+        log.debug("Opening %s in %s", project_dir, editor)
+        subprocess.run(cmd)
 
 
 if __name__ == "__main__":
