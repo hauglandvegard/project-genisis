@@ -1,3 +1,4 @@
+import argparse
 import logging
 import logging.config
 
@@ -8,12 +9,23 @@ from src.logging_config import cleanup_old_logs, make_logging_config
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(prog="genesis", description="Initialize a new project.")
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser("list", help="List available templates.")
+    args = parser.parse_args()
+
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     cleanup_old_logs(LOGS_DIR, keep=5)
     logging.config.dictConfig(make_logging_config(LOGS_DIR))
     log = logging.getLogger(__name__)
 
     try:
+        if args.command == "list":
+            templates = github.list_templates()
+            for t in templates:
+                print(t)
+            return
+
         user = github.get_user_info()
         template_owner = github.get_template_owner_info()
         templates = github.list_templates()
