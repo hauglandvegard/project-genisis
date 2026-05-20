@@ -1,8 +1,11 @@
 import logging
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
 import questionary
+
+_SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +35,13 @@ def prompt(templates: list[str], default_dest: Path) -> ProjectConfig:
             raise KeyboardInterrupt
         template = variants[labels.index(label)]
 
-    project_name = questionary.text("Project name:").ask()
+    project_name = questionary.text(
+        "Project name:",
+        validate=lambda v: (
+            _SLUG_RE.match(v) is not None
+            or "Use lowercase letters, numbers, hyphens only (no leading/trailing hyphens)"
+        ),
+    ).ask()
     if not project_name:
         raise KeyboardInterrupt
 
