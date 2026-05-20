@@ -10,6 +10,7 @@ from src.logging_config import cleanup_old_logs, make_logging_config
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog="genesis", description="Initialize a new project.")
+    parser.add_argument("--no-push", action="store_true", help="Scaffold locally, skip GitHub.")
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("list", help="List available templates.")
     args = parser.parse_args()
@@ -27,7 +28,7 @@ def main() -> None:
             return
 
         user = github.get_user_info()
-        template_owner = github.get_template_owner_info()
+        template_owner = None if args.no_push else github.get_template_owner_info()
         templates = github.list_templates()
         config = cli.prompt(templates, DEFAULT_DEST)
     except GenesisError as e:
@@ -48,17 +49,24 @@ def main() -> None:
             config.template, config.project_name, config.dest, user.name
         )
 
-        log.info("Creating GitHub repo")
-        github.create_and_push(
-            config.project_name, project_dir, config.public, config.template, user, template_owner
-        )
+        if not args.no_push:
+            log.info("Creating GitHub repo")
+            assert template_owner is not None
+            github.create_and_push(
+                config.project_name,
+                project_dir,
+                config.public,
+                config.template,
+                user,
+                template_owner,
+            )
     except GenesisError as e:
         print(f"\nError: {e}")
         return
 
-    repo_url = f"https://github.com/{user.login}/{config.project_name}"
     print(f"\nDone! {config.project_name} → {project_dir}")
-    print(f"      {repo_url}")
+    if not args.no_push:
+        print(f"      https://github.com/{user.login}/{config.project_name}")
 
 
 if __name__ == "__main__":
