@@ -46,6 +46,7 @@ def create_and_push(name: str, dest: Path, public: bool, template: str) -> None:
     ]
 
     log.debug(f"Creating Github repo by running command: {' '.join(cmd)}")
+
     try:
         subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
