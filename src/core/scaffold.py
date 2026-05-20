@@ -5,13 +5,13 @@ from pathlib import Path
 
 from cookiecutter.main import cookiecutter
 
-from src.config import TEMPLATES_REPO
+from src.config import COOKIECUTTER_TEMPLATES, TEMPLATES_REPO
 
 log = logging.getLogger(__name__)
 
 
 def scaffold(template: str, project_name: str, dest: Path, author: str) -> Path:
-    if template.startswith("python"):
+    if template in COOKIECUTTER_TEMPLATES:
         return _cookiecutter(template, project_name, dest, author)
     return _degit(template, project_name, dest)
 
