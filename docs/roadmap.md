@@ -33,5 +33,5 @@
 
 ## Infrastructure
 
-- [ ] Fix Dockerfile — add `gh`, `git`, `npx` dependencies
+- [x] Fix Dockerfile — add `gh`, `git`, `npx` dependencies
 - [x] Update `docs/question-flow.md` to match current flow
