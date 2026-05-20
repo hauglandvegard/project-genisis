@@ -5,7 +5,7 @@ from pathlib import Path
 
 from cookiecutter.main import cookiecutter
 
-from src.config import GITHUB_USERNAME, TEMPLATES_REPO
+from src.config import TEMPLATES_REPO
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def _cookiecutter(template: str, project_name: str, dest: Path, author: str) -> 
 def _degit(template: str, project_name: str, dest: Path) -> Path:
     target = dest / project_name
 
-    cmd = ["npx", "degit", f"{GITHUB_USERNAME}/genesis-templates/{template}", str(target)]
+    cmd = ["npx", "degit", f"{TEMPLATES_REPO}/{template}", str(target)]
 
     log.debug(f"Scaffolding {project_name} with degit by running command: {' '.join(cmd)}")
 
