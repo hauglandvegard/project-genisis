@@ -3,6 +3,7 @@ import logging.config
 
 from src.config import AUTHOR_NAME, DEFAULT_DEST, LOGS_DIR
 from src.core import cli, github, scaffold
+from src.core.errors import GenesisError
 from src.logging_config import cleanup_old_logs, make_logging_config
 
 
@@ -19,11 +20,17 @@ def main() -> None:
         print("\nAborted.")
         return
 
-    log.info("Scaffolding %s from template %s", config.project_name, config.template)
-    project_dir = scaffold.scaffold(config.template, config.project_name, config.dest, AUTHOR_NAME)
+    try:
+        log.info("Scaffolding %s from template %s", config.project_name, config.template)
+        project_dir = scaffold.scaffold(
+            config.template, config.project_name, config.dest, AUTHOR_NAME
+        )
 
-    log.info("Creating GitHub repo")
-    github.create_and_push(config.project_name, project_dir, config.public, config.template)
+        log.info("Creating GitHub repo")
+        github.create_and_push(config.project_name, project_dir, config.public, config.template)
+    except GenesisError as e:
+        print(f"\nError: {e}")
+        return
 
     print(f"\nDone! {config.project_name} → {project_dir}")
 

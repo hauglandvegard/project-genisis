@@ -6,6 +6,7 @@ from pathlib import Path
 from cookiecutter.main import cookiecutter
 
 from src.config import COOKIECUTTER_TEMPLATES, TEMPLATES_REPO
+from src.core.errors import GenesisError
 
 log = logging.getLogger(__name__)
 
@@ -19,17 +20,20 @@ def scaffold(template: str, project_name: str, dest: Path, author: str) -> Path:
 def _cookiecutter(template: str, project_name: str, dest: Path, author: str) -> Path:
     log.debug(f"Scaffolding {project_name} with cookiecutter from {TEMPLATES_REPO}/{template}")
 
-    cookiecutter(
-        f"gh:{TEMPLATES_REPO}",
-        directory=template,
-        no_input=True,
-        extra_context={
-            "project_name": project_name,
-            "author_name": author,
-            "year": str(datetime.now().year),
-        },
-        output_dir=str(dest),
-    )
+    try:
+        cookiecutter(
+            f"gh:{TEMPLATES_REPO}",
+            directory=template,
+            no_input=True,
+            extra_context={
+                "project_name": project_name,
+                "author_name": author,
+                "year": str(datetime.now().year),
+            },
+            output_dir=str(dest),
+        )
+    except Exception as e:
+        raise GenesisError(f"Failed to scaffold with cookiecutter: {e}") from e
 
     return dest / project_name
 
@@ -41,6 +45,9 @@ def _degit(template: str, project_name: str, dest: Path) -> Path:
 
     log.debug(f"Scaffolding {project_name} with degit by running command: {' '.join(cmd)}")
 
-    subprocess.run(cmd, check=True)
+    try:
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        raise GenesisError(f"Failed to scaffold with degit: {e.stderr.strip()}") from e
 
     return target
