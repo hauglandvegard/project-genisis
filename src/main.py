@@ -28,7 +28,7 @@ def main() -> None:
             return
 
         user = github.get_user_info()
-        template_owner = None if args.no_push else github.get_template_owner_info()
+        template_owner = github.get_template_owner_info()
         templates = github.list_templates()
         config = cli.prompt(templates, DEFAULT_DEST)
     except GenesisError as e:
@@ -51,7 +51,6 @@ def main() -> None:
 
         if not args.no_push:
             log.info("Creating GitHub repo")
-            assert template_owner is not None
             github.create_and_push(
                 config.project_name,
                 project_dir,
