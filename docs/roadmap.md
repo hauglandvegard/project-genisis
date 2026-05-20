@@ -14,8 +14,8 @@
 
 ## Features
 
-- [ ] `genesis list` — show available templates without scaffolding
-- [ ] `--no-push` flag — local scaffold only, skip GitHub repo creation
+- [x] `genesis list` — show available templates without scaffolding
+- [x] `--no-push` flag — local scaffold only, skip GitHub repo creation
 - [ ] Open project in `$EDITOR` after scaffold
 
 ## Templates (`genesis-templates`)

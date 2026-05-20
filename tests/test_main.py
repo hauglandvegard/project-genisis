@@ -76,3 +76,41 @@ def test_main_handles_genesis_error_from_list_templates(capsys: MagicMock) -> No
                     main()
 
     assert "network error" in capsys.readouterr().out
+
+
+def test_list_command_prints_templates(capsys: MagicMock) -> None:
+    from src.main import main
+
+    with _main_with_mocked_logging():
+        with patch("src.core.github.list_templates", return_value=["python", "go"]):
+            with patch("sys.argv", ["genesis", "list"]):
+                main()
+
+    out = capsys.readouterr().out
+    assert "python" in out
+    assert "go" in out
+
+
+def test_no_push_skips_create_and_push(capsys: MagicMock) -> None:
+    from src.main import main
+
+    mock_user = MagicMock()
+    mock_user.name = "Vegard"
+    mock_user.login = "hauglandvegard"
+
+    with _main_with_mocked_logging():
+        with patch("src.core.github.get_user_info", return_value=mock_user):
+            with patch("src.core.github.get_template_owner_info"):
+                with patch("src.core.github.list_templates", return_value=["python"]):
+                    with patch("src.core.cli.prompt") as mock_prompt:
+                        mock_config = MagicMock()
+                        mock_config.project_name = "test-proj"
+                        mock_config.template = "python"
+                        mock_config.dest.exists.return_value = False
+                        mock_config.dest.__truediv__ = lambda s, o: MagicMock(exists=lambda: False)
+                        mock_prompt.return_value = mock_config
+                        with patch("src.core.scaffold.scaffold", return_value=MagicMock()):
+                            with patch("src.core.github.create_and_push") as mock_push:
+                                with patch("sys.argv", ["genesis", "--no-push"]):
+                                    main()
+                                mock_push.assert_not_called()
