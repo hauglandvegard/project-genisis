@@ -1,13 +1,16 @@
 [project]
-name = "template-python"
+name = "project-genisis"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
     "python-dotenv>=1.0",
+    "questionary>=2.0",
+    "cookiecutter>=2.6",
 ]
 
 [project.scripts]
-app = "src.main:main"
+genesis = "src.main:main"
+
 
 [build-system]
 requires = ["hatchling"]
@@ -36,3 +39,7 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.13"
 strict = true
+
+[[tool.mypy.overrides]]
+module = "cookiecutter.*"
+ignore_missing_imports = true

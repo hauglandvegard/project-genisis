@@ -1,15 +1,12 @@
-# template-python
+# Project Genesis
 
-Python project template.
+CLI tool for initializing new projects on macOS. Run `genesis` in the terminal to scaffold a new project from a template.
 
 ## Prerequisites
 
-[Install uv](https://docs.astral.sh/uv/getting-started/installation/)
-
-## After cloning
-
-1. Rename `name` in `pyproject.toml`
-2. Update this README
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- [just](https://github.com/casey/just)
+- [gh](https://cli.github.com/)
 
 ## Setup
 
@@ -21,14 +18,17 @@ cp .env.example .env
 ## Run
 
 ```bash
-uv run python -m src.main
+genesis
 ```
 
 ## Dev
 
 ```bash
-uv run ruff format .
-uv run ruff check .
-uv run mypy src
-uv run pytest
+just check
+```
+
+## Install globally
+
+```bash
+uv tool install .
 ```
