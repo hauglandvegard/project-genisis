@@ -1,4 +1,5 @@
 import logging
+import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +20,9 @@ def scaffold(template: str, project_name: str, dest: Path, author: str) -> Path:
 
 def _cookiecutter(template: str, project_name: str, dest: Path, author: str) -> Path:
     log.debug(f"Scaffolding {project_name} with cookiecutter from {TEMPLATES_REPO}/{template}")
+
+    cache_dir = Path.home() / ".cookiecutters" / TEMPLATES_REPO.split("/")[-1]
+    shutil.rmtree(cache_dir, ignore_errors=True)
 
     try:
         cookiecutter(

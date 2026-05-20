@@ -18,6 +18,9 @@ def main() -> None:
         template_owner = github.get_template_owner_info()
         templates = github.list_templates()
         config = cli.prompt(templates, DEFAULT_DEST)
+    except GenesisError as e:
+        print(f"\nError: {e}")
+        return
     except KeyboardInterrupt:
         print("\nAborted.")
         return

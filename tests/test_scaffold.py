@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src.core.scaffold import scaffold
+from src.core.scaffold import _cookiecutter, scaffold
 
 
 @patch("src.core.scaffold._cookiecutter")
@@ -51,3 +51,18 @@ def test_degit_calls_npx_degit(mock_run: MagicMock) -> None:
     assert cmd[:2] == ["npx", "degit"]
     assert "go" in cmd[2]
     assert str(Path("/tmp") / "my-project") == cmd[3]
+
+
+# Bug: cookiecutter uses cached template — stale scaffold on repeated calls
+
+
+@patch("src.core.scaffold.cookiecutter")
+@patch("src.core.scaffold.shutil.rmtree")
+def test_cookiecutter_clears_cache_before_scaffold(
+    mock_rmtree: MagicMock, mock_cc: MagicMock
+) -> None:
+    mock_cc.return_value = None
+    _cookiecutter("python", "my-project", Path("/tmp"), "Vegard")
+    mock_rmtree.assert_called_once()
+    cache_path = mock_rmtree.call_args[0][0]
+    assert "genesis-templates" in str(cache_path)
