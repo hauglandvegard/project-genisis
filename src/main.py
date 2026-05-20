@@ -30,7 +30,7 @@ def main() -> None:
         user = github.get_user_info()
         template_owner = github.get_template_owner_info()
         templates = github.list_templates()
-        config = cli.prompt(templates, DEFAULT_DEST)
+        config = cli.prompt(templates, DEFAULT_DEST, no_push=args.no_push)
     except GenesisError as e:
         print(f"\nError: {e}")
         return

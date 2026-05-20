@@ -18,7 +18,7 @@ class ProjectConfig:
     public: bool
 
 
-def prompt(templates: list[str], default_dest: Path) -> ProjectConfig:
+def prompt(templates: list[str], default_dest: Path, no_push: bool = False) -> ProjectConfig:
     groups = _group_templates(templates)
 
     language = questionary.select("Language:", choices=list(groups.keys())).ask()
@@ -49,15 +49,19 @@ def prompt(templates: list[str], default_dest: Path) -> ProjectConfig:
     if dest_str is None:
         raise KeyboardInterrupt
 
-    visibility = questionary.select("Visibility:", choices=["public", "private"]).ask()
-    if visibility is None:
-        raise KeyboardInterrupt
+    if no_push:
+        public = False
+    else:
+        visibility = questionary.select("Visibility:", choices=["public", "private"]).ask()
+        if visibility is None:
+            raise KeyboardInterrupt
+        public = visibility == "public"
 
     config = ProjectConfig(
         template=template,
         project_name=project_name,
         dest=Path(dest_str).expanduser(),
-        public=visibility == "public",
+        public=public,
     )
     log.debug(f"User selected: {config}")
     return config
