@@ -7,7 +7,7 @@
 
 ## Polish
 
-- [ ] Extract `_fetch_github_user(endpoint)` helper to deduplicate `get_user_info` / `get_template_owner_info`
+- [x] Extract `_fetch_github_user(endpoint)` helper to deduplicate `get_user_info` / `get_template_owner_info`
 - [ ] Remove `python-dotenv` or add actual env var usage (currently loaded but unused)
 - [ ] Show GitHub repo URL on success
 - [ ] Check dest dir doesn't already exist before scaffolding
@@ -34,4 +34,4 @@
 ## Infrastructure
 
 - [ ] Fix Dockerfile — add `gh`, `git`, `npx` dependencies
-- [ ] Update `docs/question-flow.md` to match current flow
+- [x] Update `docs/question-flow.md` to match current flow

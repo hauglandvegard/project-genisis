@@ -19,28 +19,22 @@ class UserInfo:
 
 
 def get_user_info() -> UserInfo:
-    cmd = ["gh", "api", "user", "--jq", "{name: .name, login: .login, id: .id}"]
     log.debug("Fetching authenticated user info from GitHub")
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-    except subprocess.CalledProcessError as e:
-        raise GenesisError(f"Failed to fetch user info: {e.stderr.strip()}") from e
-    data = json.loads(result.stdout)
-    return UserInfo(
-        name=data["name"],
-        login=data["login"],
-        email=f"{data['id']}+{data['login']}@users.noreply.github.com",
-    )
+    return _fetch_github_user("user", error="Failed to fetch user info")
 
 
 def get_template_owner_info() -> UserInfo:
     owner = TEMPLATES_REPO.split("/")[0]
-    cmd = ["gh", "api", f"users/{owner}", "--jq", "{name: .name, login: .login, id: .id}"]
     log.debug(f"Fetching template owner info for {owner}")
+    return _fetch_github_user(f"users/{owner}", error="Failed to fetch template owner info")
+
+
+def _fetch_github_user(endpoint: str, error: str) -> UserInfo:
+    cmd = ["gh", "api", endpoint, "--jq", "{name: .name, login: .login, id: .id}"]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError as e:
-        raise GenesisError(f"Failed to fetch template owner info: {e.stderr.strip()}") from e
+        raise GenesisError(f"{error}: {e.stderr.strip()}") from e
     data = json.loads(result.stdout)
     return UserInfo(
         name=data["name"],
