@@ -9,6 +9,6 @@ LOGS_DIR = ROOT_DIR / "logs"
 TEMPLATES_REPO = "hauglandvegard/genesis-templates"
 DEFAULT_DEST = Path.home() / "Code"
 
-COOKIECUTTER_TEMPLATES = {"python", "python-flask", "python-django"}
+COOKIECUTTER_TEMPLATES = {"python", "python-fastapi", "python-flask", "python-django"}
 
 load_dotenv(ENV_FILE)

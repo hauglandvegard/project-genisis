@@ -1,5 +1,6 @@
 import logging
 import logging.config
+from contextlib import ExitStack
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -29,9 +30,6 @@ def test_make_logging_config_returns_valid_config(tmp_path: Path) -> None:
     logging.config.dictConfig(config)  # must not raise
 
 
-# Bug: GenesisError raised pre-prompt is not caught — propagates as uncaught exception
-
-from contextlib import ExitStack
 
 
 def _main_with_mocked_logging() -> ExitStack:
