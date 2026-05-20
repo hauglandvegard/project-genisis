@@ -1,8 +1,19 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src.config import AUTHOR_NAME, GITHUB_EMAIL, TEMPLATES_REPO
-from src.core.github import _git_init_and_commit, create_and_push, list_templates
+from src.config import TEMPLATES_REPO
+from src.core.github import UserInfo, _git_init_and_commit, create_and_push, list_templates
+
+USER = UserInfo(
+    name="Vegard Haugland",
+    login="hauglandvegard",
+    email="66406501+hauglandvegard@users.noreply.github.com",
+)
+TEMPLATE_OWNER = UserInfo(
+    name="Vegard Haugland",
+    login="hauglandvegard",
+    email="66406501+hauglandvegard@users.noreply.github.com",
+)
 
 
 @patch("src.core.github.subprocess.run")
@@ -23,7 +34,7 @@ def test_list_templates_calls_gh_api(mock_run: MagicMock) -> None:
 
 @patch("src.core.github.subprocess.run")
 def test_git_init_and_commit_runs_three_git_commands(mock_run: MagicMock) -> None:
-    _git_init_and_commit(Path("/tmp/test"), "python")
+    _git_init_and_commit(Path("/tmp/test"), "python", USER)
     assert mock_run.call_count == 3
     commands = [c[0][0] for c in mock_run.call_args_list]
     assert all(cmd[0] == "git" for cmd in commands)
@@ -31,7 +42,7 @@ def test_git_init_and_commit_runs_three_git_commands(mock_run: MagicMock) -> Non
 
 @patch("src.core.github.subprocess.run")
 def test_git_init_and_commit_message_contains_template_url(mock_run: MagicMock) -> None:
-    _git_init_and_commit(Path("/tmp/test"), "python")
+    _git_init_and_commit(Path("/tmp/test"), "python", USER)
     commit_call = mock_run.call_args_list[2]
     message = commit_call[0][0][-1]
     assert "https://github.com/hauglandvegard/genesis-templates/tree/main/python" in message
@@ -39,16 +50,23 @@ def test_git_init_and_commit_message_contains_template_url(mock_run: MagicMock) 
 
 @patch("src.core.github.subprocess.run")
 def test_git_init_and_commit_message_contains_co_author(mock_run: MagicMock) -> None:
-    _git_init_and_commit(Path("/tmp/test"), "python")
+    _git_init_and_commit(Path("/tmp/test"), "python", USER)
     commit_call = mock_run.call_args_list[2]
     message = commit_call[0][0][-1]
-    assert f"Co-Authored-By: {AUTHOR_NAME} <{GITHUB_EMAIL}>" in message
+    assert f"Co-Authored-By: {USER.name} <{USER.email}>" in message
 
 
 @patch("src.core.github._git_init_and_commit")
 @patch("src.core.github.subprocess.run")
 def test_create_and_push_public(mock_run: MagicMock, mock_init: MagicMock) -> None:
-    create_and_push("my-project", Path("/tmp/my-project"), public=True, template="python")
+    create_and_push(
+        "my-project",
+        Path("/tmp/my-project"),
+        public=True,
+        template="python",
+        user=USER,
+        template_owner=TEMPLATE_OWNER,
+    )
     cmd = mock_run.call_args[0][0]
     assert "--public" in cmd
 
@@ -56,7 +74,14 @@ def test_create_and_push_public(mock_run: MagicMock, mock_init: MagicMock) -> No
 @patch("src.core.github._git_init_and_commit")
 @patch("src.core.github.subprocess.run")
 def test_create_and_push_private(mock_run: MagicMock, mock_init: MagicMock) -> None:
-    create_and_push("my-project", Path("/tmp/my-project"), public=False, template="python")
+    create_and_push(
+        "my-project",
+        Path("/tmp/my-project"),
+        public=False,
+        template="python",
+        user=USER,
+        template_owner=TEMPLATE_OWNER,
+    )
     cmd = mock_run.call_args[0][0]
     assert "--private" in cmd
 
@@ -64,5 +89,12 @@ def test_create_and_push_private(mock_run: MagicMock, mock_init: MagicMock) -> N
 @patch("src.core.github._git_init_and_commit")
 @patch("src.core.github.subprocess.run")
 def test_create_and_push_calls_git_init_first(mock_run: MagicMock, mock_init: MagicMock) -> None:
-    create_and_push("my-project", Path("/tmp/my-project"), public=True, template="python")
-    mock_init.assert_called_once_with(Path("/tmp/my-project"), "python")
+    create_and_push(
+        "my-project",
+        Path("/tmp/my-project"),
+        public=True,
+        template="python",
+        user=USER,
+        template_owner=TEMPLATE_OWNER,
+    )
+    mock_init.assert_called_once_with(Path("/tmp/my-project"), "python", TEMPLATE_OWNER)
