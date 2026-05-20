@@ -2,8 +2,8 @@
 
 ## Bugs
 
-- [ ] Catch `GenesisError` in pre-prompt block (`get_user_info`, `get_template_owner_info`, `list_templates` can all raise it but only `KeyboardInterrupt` is caught)
-- [ ] Force fresh cookiecutter pull — currently may use cached template
+- [x] Catch `GenesisError` in pre-prompt block (`get_user_info`, `get_template_owner_info`, `list_templates` can all raise it but only `KeyboardInterrupt` is caught)
+- [x] Force fresh cookiecutter pull — currently may use cached template
 
 ## Polish
 
@@ -20,6 +20,7 @@
 
 ## Templates (`genesis-templates`)
 
+- [ ] Python / FastAPI
 - [ ] Go — base
 - [ ] Python / Flask
 - [ ] Python / Django
