@@ -25,6 +25,11 @@ def main() -> None:
         print("\nAborted.")
         return
 
+    project_dir = config.dest / config.project_name
+    if project_dir.exists():
+        print(f"\nError: {project_dir} already exists.")
+        return
+
     try:
         log.info("Scaffolding %s from template %s", config.project_name, config.template)
         project_dir = scaffold.scaffold(
@@ -39,7 +44,9 @@ def main() -> None:
         print(f"\nError: {e}")
         return
 
+    repo_url = f"https://github.com/{user.login}/{config.project_name}"
     print(f"\nDone! {config.project_name} → {project_dir}")
+    print(f"      {repo_url}")
 
 
 if __name__ == "__main__":

@@ -8,9 +8,9 @@
 ## Polish
 
 - [x] Extract `_fetch_github_user(endpoint)` helper to deduplicate `get_user_info` / `get_template_owner_info`
-- [ ] Remove `python-dotenv` or add actual env var usage (currently loaded but unused)
-- [ ] Show GitHub repo URL on success
-- [ ] Check dest dir doesn't already exist before scaffolding
+- [x] Remove `python-dotenv` or add actual env var usage (currently loaded but unused)
+- [x] Show GitHub repo URL on success
+- [x] Check dest dir doesn't already exist before scaffolding
 
 ## Features
 

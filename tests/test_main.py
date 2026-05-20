@@ -30,8 +30,6 @@ def test_make_logging_config_returns_valid_config(tmp_path: Path) -> None:
     logging.config.dictConfig(config)  # must not raise
 
 
-
-
 def _main_with_mocked_logging() -> ExitStack:
     stack = ExitStack()
     stack.enter_context(patch("src.main.cleanup_old_logs"))
