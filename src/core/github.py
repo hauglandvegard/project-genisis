@@ -1,9 +1,10 @@
+import base64
 import json
 import logging
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from src.config import TEMPLATES_REPO
 from src.core.errors import GenesisError
@@ -59,6 +60,21 @@ def list_templates() -> list[str]:
     except subprocess.CalledProcessError as e:
         raise GenesisError(f"Failed to fetch templates: {e.stderr.strip()}") from e
     return cast(list[str], json.loads(result.stdout))
+
+
+def get_template_config(template: str) -> dict[str, Any]:
+    endpoint = f"repos/{TEMPLATES_REPO}/contents/{template}/cookiecutter.json"
+    log.debug(f"Fetching cookiecutter.json for template {template}")
+    try:
+        result = subprocess.run(
+            ["gh", "api", endpoint],
+            capture_output=True, text=True, check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise GenesisError(f"Failed to fetch template config: {e.stderr.strip()}") from e
+    data = json.loads(result.stdout)
+    content = base64.b64decode(data["content"]).decode()
+    return cast(dict[str, Any], json.loads(content))
 
 
 def create_and_push(

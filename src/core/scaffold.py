@@ -6,7 +6,7 @@ from pathlib import Path
 
 from cookiecutter.main import cookiecutter
 
-from src.config import COOKIECUTTER_TEMPLATES, TEMPLATES_REPO
+from src.config import CLAUDE_RESOURCES, COOKIECUTTER_TEMPLATES, TEMPLATES_REPO
 from src.core.errors import GenesisError
 
 log = logging.getLogger(__name__)
@@ -40,6 +40,13 @@ def _cookiecutter(template: str, project_name: str, dest: Path, author: str) -> 
         raise GenesisError(f"Failed to scaffold with cookiecutter: {e}") from e
 
     return dest / project_name
+
+
+def add_claude_resources(project_dir: Path) -> None:
+    if not CLAUDE_RESOURCES.is_dir():
+        raise GenesisError(f"Claude resources missing at {CLAUDE_RESOURCES}")
+    log.debug(f"Copying Claude resources from {CLAUDE_RESOURCES} to {project_dir}")
+    shutil.copytree(CLAUDE_RESOURCES, project_dir, dirs_exist_ok=True)
 
 
 def _degit(template: str, project_name: str, dest: Path) -> Path:

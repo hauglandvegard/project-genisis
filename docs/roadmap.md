@@ -20,7 +20,7 @@
 
 ## Templates (`genesis-templates`)
 
-- [ ] Python / FastAPI
+- [x] Python / FastAPI
 - [ ] Go — base
 - [ ] Python / Flask
 - [ ] Python / Django

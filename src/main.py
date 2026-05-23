@@ -51,6 +51,10 @@ def main() -> None:
             config.template, config.project_name, config.dest, user.name
         )
 
+        if config.include_claude:
+            log.info("Adding Claude resources")
+            scaffold.add_claude_resources(project_dir)
+
         if not args.no_push:
             log.info("Creating GitHub repo")
             github.create_and_push(

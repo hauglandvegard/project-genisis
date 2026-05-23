@@ -1,7 +1,9 @@
 import logging
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import questionary
 
@@ -13,27 +15,30 @@ log = logging.getLogger(__name__)
 @dataclass
 class ProjectConfig:
     template: str
+    framework: str | None
     project_name: str
     dest: Path
     public: bool
+    include_claude: bool
 
 
-def prompt(templates: list[str], default_dest: Path, no_push: bool = False) -> ProjectConfig:
-    groups = _group_templates(templates)
-
-    language = questionary.select("Language:", choices=list(groups.keys())).ask()
-    if language is None:
+def prompt(
+    templates: list[str],
+    default_dest: Path,
+    no_push: bool = False,
+    get_framework_choices: Callable[[str], list[str]] | None = None,
+) -> ProjectConfig:
+    template = questionary.select("Language:", choices=templates).ask()
+    if template is None:
         raise KeyboardInterrupt
 
-    variants = groups[language]
-    if len(variants) == 1:
-        template = variants[0]
-    else:
-        labels = [t.split("-", 1)[1] if "-" in t else "base" for t in variants]
-        label = questionary.select("Variant:", choices=labels).ask()
-        if label is None:
-            raise KeyboardInterrupt
-        template = variants[labels.index(label)]
+    framework: str | None = None
+    if get_framework_choices:
+        choices = get_framework_choices(template)
+        if len(choices) > 1:
+            framework = questionary.select("Framework:", choices=choices).ask()
+            if framework is None:
+                raise KeyboardInterrupt
 
     project_name = questionary.text(
         "Project name:",
@@ -57,19 +62,20 @@ def prompt(templates: list[str], default_dest: Path, no_push: bool = False) -> P
             raise KeyboardInterrupt
         public = visibility == "public"
 
+    include_claude = questionary.confirm(
+        "Include Claude resources (CLAUDE.md, agents, commands)?",
+        default=True,
+    ).ask()
+    if include_claude is None:
+        raise KeyboardInterrupt
+
     config = ProjectConfig(
         template=template,
+        framework=framework,
         project_name=project_name,
         dest=Path(dest_str).expanduser(),
         public=public,
+        include_claude=include_claude,
     )
     log.debug(f"User selected: {config}")
     return config
-
-
-def _group_templates(templates: list[str]) -> dict[str, list[str]]:
-    groups: dict[str, list[str]] = {}
-    for t in templates:
-        lang = t.split("-")[0]
-        groups.setdefault(lang, []).append(t)
-    return groups
