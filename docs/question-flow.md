@@ -16,13 +16,19 @@ graph TD
     q3["Project name?"]
     q3 --> q4["Destination? (default: ~/Code)"]
     q4 --> q5["Visibility? (public / private)"]
+    q5 --> q6["Include Claude resources? (default: yes)"]
 
-    q5 --> dispatch{"Cookiecutter template?"}
+    q6 --> dispatch{"Cookiecutter template?"}
     dispatch -- yes --> cc["cookiecutter gh:hauglandvegard/genesis-templates"]
     dispatch -- no --> dg["npx degit hauglandvegard/genesis-templates/variant"]
 
-    cc --> git
-    dg --> git
+    cc --> claude
+    dg --> claude
+
+    claude{"Include Claude?"}
+    claude -- yes --> copy["Copy resources/claude/* into project"]
+    claude -- no --> git
+    copy --> git
 
     git["git init + add + commit"]
     git --> repo["gh repo create + push"]
