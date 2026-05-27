@@ -25,7 +25,7 @@ artifacts = ["src/resources/**/*"]
 [dependency-groups]
 dev = [
     "pytest>=8",
-    "ruff>=0.9",
+    "ruff>=0.15.14",
     "mypy>=1.10",
 ]
 
