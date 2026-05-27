@@ -26,7 +26,7 @@ artifacts = ["src/resources/**/*"]
 dev = [
     "pytest>=8",
     "ruff>=0.9",
-    "mypy>=1.10",
+    "mypy>=2.1.0",
 ]
 
 [tool.pytest.ini_options]
